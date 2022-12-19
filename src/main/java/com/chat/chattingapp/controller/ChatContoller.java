@@ -1,13 +1,11 @@
 package com.chat.chattingapp.controller;
 
-import com.chat.chattingapp.domain.ChatMessage;
-import com.chat.chattingapp.domain.MessageWriteRequest;
-import com.chat.chattingapp.domain.MessageWriteResponse;
-import com.chat.chattingapp.domain.Result;
+import com.chat.chattingapp.domain.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/chat")
@@ -15,11 +13,21 @@ public class ChatContoller {
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
     @GetMapping("/messages")
-    public Result<List<ChatMessage>> getmessages(){
+    public Result<MessageResponse> getmessages(@RequestBody MessageRequest request){
+        List<ChatMessage> messages = chatMessages;
+        if(request.getFromId() != null){
+            int idx = IntStream.range(0,chatMessages.size())
+                    .filter(i->chatMessages.get(i).getId() == request.getFromId())
+                    .findFirst()
+                    .orElse(-1);
+            if(idx != -1){
+                messages = chatMessages.subList(idx+1,chatMessages.size());
+            }
+        }
         return new Result<>(
                 "S-1",
                 "전체 메세지 조회에 성공했습니다.",
-                chatMessages
+                new MessageResponse(messages,messages.size())
         );
     }
     @PostMapping("/message")
