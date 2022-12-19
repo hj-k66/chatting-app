@@ -1,12 +1,10 @@
 package com.chat.chattingapp.controller;
 
 import com.chat.chattingapp.domain.ChatMessage;
+import com.chat.chattingapp.domain.MessageWriteRequest;
 import com.chat.chattingapp.domain.MessageWriteResponse;
 import com.chat.chattingapp.domain.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +23,8 @@ public class ChatContoller {
         );
     }
     @PostMapping("/message")
-    public Result<MessageWriteResponse> writeMessage(){
-        ChatMessage chatMessage = new ChatMessage("홍길동", "안녕하세요.");
+    public Result<MessageWriteResponse> writeMessage(@RequestBody MessageWriteRequest request){
+        ChatMessage chatMessage = new ChatMessage(request.getAuthorName(), request.getContent());
         chatMessages.add(chatMessage);
         return new Result<>(
                 "S-1",
